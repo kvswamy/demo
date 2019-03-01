@@ -1,0 +1,317 @@
+Aggregation: combines multiple data elements (To save amount of metadata store in NN by combining multiple input files)
+CRC Cyclic Redundancy Check: HDFS uses internally to maintain block level integrity. To verify data correctness while transferring data across nodes/clusters. 
+Ingrees:  Insertion of data into Hadoop systems egrees – extraction of data from Hadoop systems
+Sqoop
+sqoop import --username hip_sqoop_user --password password \
+--connect jdbc:mysql://localhost/sqoop_test --table stocks
+$ cat > ~/.sqoop_import_options.txt << EOF
+import
+--username
+hip_sqoop_user
+--password
+password
+EOF
+$ chmod 700 ~/.sqoop_import_options.txt
+hadoop fs -rmr stocks
+$ sqoop --options-file ~/.sqoop_import_options.txt \
+--as-avrodatafile \
+--compress \
+--compression-codec org.apache.hadoop.io.compress.SnappyCodec\
+--connect jdbc:mysql://localhost/sqoop_test \
+--table stocks
+$ sqoop --options-file ~/.sqoop_import_options.txt \
+--query "$query" \
+--split-by id \
+--target-dir /user/aholmes/2007-stocks \
+--connect jdbc:mysql://localhost/sqoop_test
+$ hadoop fs -rmr stocks
+$ sqoop --options-file ~/.sqoop_import_options.txt \
+--check-column "quote_date" \
+--incremental "lastmodified" \
+--last-value "2005-01-01" \
+--connect jdbc:mysql://localhost/sqoop_test \
+--table stocks
+
+$ sqoop job --create stock_increment -- import \
+--append \
+--check-column "quote_date" \
+--incremental "lastmodified" \
+--last-value "2005-01-01" \
+--connect jdbc:mysql://localhost/sqoop_test \
+--username hip_sqoop_user \
+--table stocks
+$ sqoop job --list
+Available jobs:
+stock_increment
+$ sqoop job --exec stock_increment
+$ sqoop job --show stock_increment
+http://goo.gl/yL4KQ.
+$ hadoop fs -rmr stocks
+$ sqoop --options-file ~/.sqoop_import_options.txt \
+--hive-import \
+--connect jdbc:mysql://localhost/sqoop_test \
+--table stocks
+$ hive
+hive> select * from stocks;
+$ hive
+hive> drop table stocks;
+$ hadoop fs -rmr stocks
+$ sqoop --options-file ~/.sqoop_import_options.txt \
+--hive-import \
+--hive-overwrite \
+--compress \
+--compression-codec com.hadoop.compression.lzo.LzopCodec \
+--connect jdbc:mysql://localhost/sqoop_test \
+--table stocks
+$ hive
+hive> drop table stocks;
+$ hadoop fs -rmr stocks
+$ read -d '' query << "EOF"
+SELECT id, quote_date, open_price
+FROM stocks
+WHERE symbol = "AAPL" AND $CONDITIONS
+EOF
+$ sqoop --options-file ~/.sqoop_import_options.txt \
+--query "$query" \
+--split-by id \
+--hive-import \
+--hive-table stocks \
+--hive-overwrite \
+--hive-partition-key symbol \
+--hive-partition-value "AAPL" \
+--connect jdbc:mysql://localhost/sqoop_test \
+--target-dir stocks
+$ hadoop fs -lsr /user/hive/warehouse
+--
+$ cat > ~/.sqoop_export_options.txt << EOF
+export
+--username
+hip_sqoop_user
+--password
+password
+--connect
+jdbc:mysql://localhost/sqoop_test
+EOF
+$ chmod 700 ~/.sqoop_export_options.txt
+$ hadoop fs -rmr stocks
+$ sqoop --options-file ~/.sqoop_import_options.txt \
+--connect jdbc:mysql://localhost/sqoop_test --table stocks
+$ hadoop fs -cat stocks/part-m-00000 | head
+$ sqoop --options-file ~/.sqoop_export_options.txt \
+--export-dir stocks \
+--table stocks_export
+$ sqoop --options-file ~/.sqoop_export_options.txt \
+--update-mode updateonly \
+--update-key id \
+--export-dir stocks \
+--table stocks_export
+
+$ sqoop --options-file ~/.sqoop_export_options.txt \
+--export-dir stocks \
+--table stocks_export \
+--staging-table stocks_staging \
+--clear-staging-table
+$ sqoop --options-file ~/.sqoop_export_options.txt \
+--direct \
+--export-dir stocks \
+--table stocks_export
+$ sqoop --options-file ~/.sqoop_export_options.txt \
+--export-dir stocks \
+--table stocks_export \
+--staging-table stocks_staging \
+--clear-staging-table
+$ sqoop --options-file ~/.sqoop_export_options.txt \
+--direct \
+--export-dir stocks \
+--table stocks_export
+$ sqoop --options-file ~/.sqoop_export_options.txt \
+--direct \
+--export-dir stocks \
+--table stocks_staging
+
+$ mysql --host=localhost \
+--user=hip_sqoop_user \
+--password=password \
+-e "INSERT
+
+hive> CREATE TABLE stocks (
+symbol string,
+dates string,
+open double,
+high double,
+low double,
+close double,
+volume int,
+adjClose double
+)
+ROW FORMAT SERDE 'com.manning.hip.ch3.StockWritableSerDe'
+STORED AS SEQUENCEFILE;
+hive> LOAD DATA INPATH 'stocks.seqfile' INTO TABLE stocks;
+hive> select * from stocks;
+AAPL 2009-01-02 85.88 91.04 85.16 90.75 26643400 90.75
+AAPL 2008-01-02 199.27 200.26 192.55 194.84 38542100 194.84
+AAPL 2007-01-03 86.29 86.58 81.9 83.8 44225700 83.8
+AAPL 2006-01-03 72.38 74.75 72.25 74.75 28829800 74.75
+AAPL 2005-01-03 64.78 65.11 62.6 63.29 24714000 31.65
+$ hive -S -e "SHOW DATABASES"
+
+
+---------------------
+Aggregation: combines multiple data elements (To save amount of metadata store in NN by combining multiple input files)
+CRC Cyclic Redundancy Check: HDFS uses internally to maintain block level integrity. To verify data correctness while transferring data across nodes/clusters. 
+Ingrees:  Insertion of data into Hadoop systems egrees – extraction of data from Hadoop systems
+Sqoop
+sqoop import --username hip_sqoop_user --password password \
+--connect jdbc:mysql://localhost/sqoop_test --table stocks
+$ cat > ~/.sqoop_import_options.txt << EOF
+import
+--username
+hip_sqoop_user
+--password
+password
+EOF
+$ chmod 700 ~/.sqoop_import_options.txt
+hadoop fs -rmr stocks
+$ sqoop --options-file ~/.sqoop_import_options.txt \
+--as-avrodatafile \
+--compress \
+--compression-codec org.apache.hadoop.io.compress.SnappyCodec\
+--connect jdbc:mysql://localhost/sqoop_test \
+--table stocks
+$ sqoop --options-file ~/.sqoop_import_options.txt \
+--query "$query" \
+--split-by id \
+--target-dir /user/aholmes/2007-stocks \
+--connect jdbc:mysql://localhost/sqoop_test
+$ hadoop fs -rmr stocks
+$ sqoop --options-file ~/.sqoop_import_options.txt \
+--check-column "quote_date" \
+--incremental "lastmodified" \
+--last-value "2005-01-01" \
+--connect jdbc:mysql://localhost/sqoop_test \
+--table stocks
+
+$ sqoop job --create stock_increment -- import \
+--append \
+--check-column "quote_date" \
+--incremental "lastmodified" \
+--last-value "2005-01-01" \
+--connect jdbc:mysql://localhost/sqoop_test \
+--username hip_sqoop_user \
+--table stocks
+$ sqoop job --list
+Available jobs:
+stock_increment
+$ sqoop job --exec stock_increment
+$ sqoop job --show stock_increment
+http://goo.gl/yL4KQ.
+$ hadoop fs -rmr stocks
+$ sqoop --options-file ~/.sqoop_import_options.txt \
+--hive-import \
+--connect jdbc:mysql://localhost/sqoop_test \
+--table stocks
+$ hive
+hive> select * from stocks;
+$ hive
+hive> drop table stocks;
+$ hadoop fs -rmr stocks
+$ sqoop --options-file ~/.sqoop_import_options.txt \
+--hive-import \
+--hive-overwrite \
+--compress \
+--compression-codec com.hadoop.compression.lzo.LzopCodec \
+--connect jdbc:mysql://localhost/sqoop_test \
+--table stocks
+$ hive
+hive> drop table stocks;
+$ hadoop fs -rmr stocks
+$ read -d '' query << "EOF"
+SELECT id, quote_date, open_price
+FROM stocks
+WHERE symbol = "AAPL" AND $CONDITIONS
+EOF
+$ sqoop --options-file ~/.sqoop_import_options.txt \
+--query "$query" \
+--split-by id \
+--hive-import \
+--hive-table stocks \
+--hive-overwrite \
+--hive-partition-key symbol \
+--hive-partition-value "AAPL" \
+--connect jdbc:mysql://localhost/sqoop_test \
+--target-dir stocks
+$ hadoop fs -lsr /user/hive/warehouse
+--
+$ cat > ~/.sqoop_export_options.txt << EOF
+export
+--username
+hip_sqoop_user
+--password
+password
+--connect
+jdbc:mysql://localhost/sqoop_test
+EOF
+$ chmod 700 ~/.sqoop_export_options.txt
+$ hadoop fs -rmr stocks
+$ sqoop --options-file ~/.sqoop_import_options.txt \
+--connect jdbc:mysql://localhost/sqoop_test --table stocks
+$ hadoop fs -cat stocks/part-m-00000 | head
+$ sqoop --options-file ~/.sqoop_export_options.txt \
+--export-dir stocks \
+--table stocks_export
+$ sqoop --options-file ~/.sqoop_export_options.txt \
+--update-mode updateonly \
+--update-key id \
+--export-dir stocks \
+--table stocks_export
+
+$ sqoop --options-file ~/.sqoop_export_options.txt \
+--export-dir stocks \
+--table stocks_export \
+--staging-table stocks_staging \
+--clear-staging-table
+$ sqoop --options-file ~/.sqoop_export_options.txt \
+--direct \
+--export-dir stocks \
+--table stocks_export
+$ sqoop --options-file ~/.sqoop_export_options.txt \
+--export-dir stocks \
+--table stocks_export \
+--staging-table stocks_staging \
+--clear-staging-table
+$ sqoop --options-file ~/.sqoop_export_options.txt \
+--direct \
+--export-dir stocks \
+--table stocks_export
+$ sqoop --options-file ~/.sqoop_export_options.txt \
+--direct \
+--export-dir stocks \
+--table stocks_staging
+
+$ mysql --host=localhost \
+--user=hip_sqoop_user \
+--password=password \
+-e "INSERT
+
+hive> CREATE TABLE stocks (
+symbol string,
+dates string,
+open double,
+high double,
+low double,
+close double,
+volume int,
+adjClose double
+)
+ROW FORMAT SERDE 'com.manning.hip.ch3.StockWritableSerDe'
+STORED AS SEQUENCEFILE;
+hive> LOAD DATA INPATH 'stocks.seqfile' INTO TABLE stocks;
+hive> select * from stocks;
+AAPL 2009-01-02 85.88 91.04 85.16 90.75 26643400 90.75
+AAPL 2008-01-02 199.27 200.26 192.55 194.84 38542100 194.84
+AAPL 2007-01-03 86.29 86.58 81.9 83.8 44225700 83.8
+AAPL 2006-01-03 72.38 74.75 72.25 74.75 28829800 74.75
+AAPL 2005-01-03 64.78 65.11 62.6 63.29 24714000 31.65
+$ hive -S -e "SHOW DATABASES"
+
+
