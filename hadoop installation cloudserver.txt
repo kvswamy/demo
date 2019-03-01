@@ -1,0 +1,111 @@
+Install Java.
+Log in to Node 1 as cloud_user and install the java-1.8.0-openjdk package 
+
+sudo yum install java-1.8.0-openjdk -y
+
+2.Deploy Hadoop.
+From the cloud_user home directory, download Hadoop-2.9.2 from your desired mirror. You can view a list of mirrors here.
+curl -O http://mirrors.gigenet.com/apache/hadoop/common/hadoop-2.9.2/hadoop-2.9.2.tar.gz
+Unpack the archive in place:
+tar -xzf hadoop-2.9.2.tar.gz
+Delete the archive file rm -rf hadoop-2.9.2.tar.gz.
+Rename the installation directory:
+mv hadoop-2.9.2 hadoop
+
+3. Configure JAVA_HOME.
+From /home/cloud_user/hadoop, set JAVA_HOME in etc/hadoop/hadoop-env.sh by changing the following line:
+export JAVA_HOME=${JAVA_HOME}
+to
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.191.b12-1.el7_6.x86_64/jre
+Save and close the file.
+
+
+4. Configure core Hadoop.
+Set the default filesystem to hdfs on localhost in /home/cloud_user/hadoop/etc/hadoop/core-site.xml by changing the following lines:
+<configuration>
+</configuration>
+to
+<configuration>
+<property>
+ <name>fs.defaultFS</name>
+ <value>hdfs://localhost:9000</value>
+</property>
+</configuration>
+Save and close the file.
+
+5. Configure HDFS.
+Set the default block replication to 1 in /home/cloud_user/hadoop/etc/hadoop/hdfs-site.xml by changing the following lines:
+<configuration>
+</configuration>
+to
+<configuration>
+<property>
+ <name>dfs.replication</name>
+ <value>1</value>
+</property>
+</configuration>
+Save and close the file.
+
+6. Setup passwordless SSH to localhost.
+As cloud_user, generate a public/private RSA key pair with 
+ssh-keygen
+
+//The default option for each prompt will suffice.
+
+Add your newly generated public key to your authorized keys list with 
+
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+Test passwordless SSH to localhost with 
+
+ssh localhost
+
+Add localhost to the list of known hosts by accepting its key with yes.
+
+Exit the SSH to localhost with exit
+
+
+7. Format the filesystem.
+From /home/cloud_user/hadoop, format the DFS with 
+
+bin/hdfs namenode -format
+
+8. Start Hadoop.
+Start the NameNode and DataNode daemons from /home/cloud_user/hadoop with 
+
+sbin/start-dfs.sh.
+
+Accept the key for 0.0.0.0 when prompted with yes (this will only need to be done the first time we start Hadoop).
+
+9.Download and copy the latin text to Hadoop.
+From /home/cloud_user/hadoop, download the latin.txt file with:
+curl -O https://raw.githubusercontent.com/linuxacademy/content-hadoop-quick-start/master/latin.txt
+From /home/cloud_user/hadoop, create the /user and /user/root directories in Hadoop with:
+bin/hdfs dfs -mkdir -p /user/cloud_user
+From /home/cloud_user/hadoop/, copy the latin.txt file to Hadoop at /user/cloud_user/latin with:
+bin/hdfs dfs -put latin.txt latin
+
+10.Examine the `latin.txt` text with MapReduce as per the instructions.
+
+From /home/cloud_user/hadoop/, use the 
+
+hadoop-mapreduce-examples-2.9.2.jar
+
+ to calculate the average length of the words in the /user/cloud_user/latin 
+
+file and save the job output to 
+/user/cloud_user/latin_wordmean_output
+
+in Hadoop wit:h
+
+bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.9.2.jar wordmean latin latin_wordmean_output
+
+From /home/cloud_user/hadoop/, examine your wordmean job output files with:
+
+bin/hdfs dfs -cat latin_wordmean_output/*
+
+ps aux | grep java
+jps
+ps -aux | grep java | awk '{print $12}'
+sudo yum install ant
+JPS
