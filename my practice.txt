@@ -63,7 +63,7 @@ set hive.exec.dynamic.partition = true;
 
 set hive.exec.dynamic.partition.mode = nonstrict;
 
- create table par(m1 int,m2 int,id1 int)partitioned by(year string);
+ create table par(m1 int,m2 int,id1 int)partitioned by(year string);/////////////////upto this partitioning////////////////////////////////////////
 
 insert overwrite table par partition(year) select * from m;
 
