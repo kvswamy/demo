@@ -1,0 +1,96 @@
+hive video
+excel
+json
+pig
+sqoop
+
+MYSQL
+alter table table_name add column columnname TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+alter table tablename drop column columnname;
+update tablename set columnname=100 whre name ='veera';
+
+alter table pokemon add column pk int primary key auto_increment;
+
+delete from pokemon where id >= 802  ;
+
+alter table pokemon drop column id;
+
+alter table pokemon change pk id int;
+
+alter table air add primary key(sno);
+
+alter table m rename to p;
+
+alter table flight modify eff_dt_till timestamp;
+
+alter table flight MODIFY COLUMN eff_dt_till timestamp NULL;
+
+delete from flight;
+
+SQOOP
+for managed tables:
+sqoop import --connect jdbc:mysql://localhost/db --username root -P --table pokemon --target-dir /user/M --append --incremental lastmodified --check-column last_modified --last-value '2018-09-02 13:03:08.0' -m 1 
+
+sqoop import --connect jdbc:mysql://localhost/db --username root -P --table pokemon --target-dir /user/M  --incremental append --check-column id --last-value 807 -m 1 
+
+sqoop codegen --connect jdbc:mysql://localhost/db --username root -P --table pokemon 
+
+sqoop import --connect jdbc:mysql://localhost/db --username root -P --table pokemon --hive-import --create-hive-table --hive-table pokemon1 --warehouse-dir /user/hive/warehouse/ -m 1 
+
+sqoop import --connect jdbc:mysql://localhost/db --username root -P --table pokemon --target-dir /user/P -m 1 --append
+
+sqoop import-all-tables --connect jdbc:mysql://localhost/db --username root -P --warehouse-dir /user/P -m 1
+
+sqoop list-tables --connect jdbc:mysql://localhost/db --username root -P
+
+sqoop list-databases --connect jdbc:mysql://localhost/ --username root -P
+
+sqoop eval --connect jdbc:mysql://localhost/db --username root -P --query "alter table m drop column id "
+
+for external tables
+sqoop job --create sqoop_loan_info1 -- import --connect jdbc:mysql://localhost/db --username root -P --table loan_info --target-dir /bank/loan_info -m 1 
+
+sqoop job --list
+sqoop job --exec sqoop_loan_info1
+then 
+create external table in hive asfollows
+create external table loan_info(id int,lp_date date)row format delimited fields terminated by',' location'/bank/loaninfo';
+
+note:location must be target dir in sqoop job so that data will point no need to load data into hive table.
+
+
+
+HIVE
+
+set hive.exec.dynamic.partition = true;
+
+set hive.exec.dynamic.partition.mode = nonstrict;
+
+ create table par(m1 int,m2 int,id1 int)partitioned by(year string);
+
+insert overwrite table par partition(year) select * from m;
+
+create table tab as select * from m;
+
+select max(length(sno)) from air;
+
+create table if not exists temp(sno double,LOCAL_AIRPORT string,AIRLINE_CODE string,FLIGHT_NUMBER int,FREQUENCY double,ARRIVAL_DEPARTURE_FLAG int,SOURCE_DESTINATION string,SCHED_TIME double,TIME_ZONE string,EFF_DT_FROM string,EFF_DT_TILL string) row format delimited fields terminated by',' tblproperties("skip.header.line.count"="1")
+
+create table if not exists flight(sno double,LOCAL_AIRPORT string,AIRLINE_CODE string,FLIGHT_NUMBER int,FREQUENCY double,ARRIVAL_DEPARTURE_FLAG int,SOURCE_DESTINATION string,SCHED_TIME double,TIME_ZONE string,EFF_DT_FROM timestamp,EFF_DT_TILL timestamp) row format delimited fields terminated by',' tblproperties("skip.header.line.count"="1")
+
+
+insert overwrite table flight select sno,LOCAL_AIRPORT,AIRLINE_CODE,FLIGHT_NUMBER,FREQUENCY,ARRIVAL_DEPARTURE_FLAG,SOURCE_DESTINATION,SCHED_TIME,TIME_ZONE,from_unixtime(unix_timestamp(EFF_DT_FROM,"YYYY-MM-DD'T'HH:MM:SS")),from_unixtime(unix_timestamp(EFF_DT_TILL,"YYYY-MM-DD'T'HH:MM:SS")) from temp;
+
+
+
+create table if not exists air(sno double,airport string,as_code int ,as_desc string ,icon_sel_url string,icon_unsel_url string,asc_name string,asc_code int,asc_desc string,img_url string, email string,contact string,url string) row format delimited fields terminated by',' stored as textfile tblproperties("skip.header.line.count"="1") ;
+
+
+create table if not exists census(sno int,age int,emp_type string,income double,emp string,total int,marital_status string,dept string,family_type string,race string,gender string,income1 int,income2 int,cat_id int,nationality string,population string) row format delimited fields terminated by',' lines terminated by'\n' stored as textfile tblproperties("skip.header.line.count"="1");
+
+
+shell scripting
+json parsing
+
+create table if not exists petrol(District.ID int,Distributer name string,Buy rate (million),Sell rate(million),volumeIN(millioncubic litter),volume OUT(millioncubic litter),Year
