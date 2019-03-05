@@ -36,7 +36,7 @@ sqoop import --connect jdbc:mysql://localhost/db --username root -P --table poke
 
 sqoop codegen --connect jdbc:mysql://localhost/db --username root -P --table pokemon 
 
-sqoop import --connect jdbc:mysql://localhost/db --username root -P --table pokemon --hive-import --create-hive-table --hive-table pokemon1 --warehouse-dir /user/hive/warehouse/ -m 1 
+sqoop import --connect jdbc:mysql://localhost/db --username root -P --table pokemon --hive-import --create-hive-table --hive-table pokemon1 --warehouse-dir /user/hive/warehouse/ -m 1     /////////this will create hive table automatically with provided name need not to create another in hive//////////
 
 sqoop import --connect jdbc:mysql://localhost/db --username root -P --table pokemon --target-dir /user/P -m 1 --append
 
