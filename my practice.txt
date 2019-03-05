@@ -85,4 +85,5 @@ create table if not exists air(sno double,airport string,as_code int ,as_desc st
 
 create table if not exists census(sno int,age int,emp_type string,income double,emp string,total int,marital_status string,dept string,family_type string,race string,gender string,income1 int,income2 int,cat_id int,nationality string,population string) row format delimited fields terminated by',' lines terminated by'\n' stored as textfile tblproperties("skip.header.line.count"="1");
 
-
+try this link for partitioning and bucketing:
+https://acadgild.com/blog/bucketing-in-hive
