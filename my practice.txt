@@ -90,7 +90,7 @@ https://acadgild.com/blog/bucketing-in-hive
 
 
 bucketing and partitioning:
-create table bucketing(street string,city string,zip int,state string,beds int,baths int,sq_ft double, type string,price double) row format delimited fields terminated by',' lines terminated by'\n' stored as textfile tblproperties("skder.line.count"="1"); 
+create table bucketing(street string,city string,zip int,state string,beds int,baths int,sq_ft double, type string,price double) row format delimited fields terminated by',' lines terminated by'\n' stored as textfile tblproperties("skip.header.line.count"="1"); 
 
 load data local inpath'/home/gopal/real_csv'into table bucketing;
 
