@@ -102,4 +102,4 @@ set hive.enforce.bucketing=true;
 
 create table bucket_tb(street string,zip int,state string,beds int,baths int,sq_ft double, type string,price double)partitioned by (city string) clustered by(street) into 4 buckets  row format delimited fields terminated by',' lines terminated by'\n' stored as textfile ; 
 
-insert into table bucket_tb partition(city) select * from bucketing;
+insert into table bucket_tb partition(city) select street,zip,state,beds,baths,sq_ft,type,price,city from bucketing;
