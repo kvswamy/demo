@@ -25,6 +25,19 @@ alter table flight MODIFY COLUMN eff_dt_till timestamp NULL;
 delete from flight;
 
 SQOOP
+echo -n "root" >sqoop.password
+
+/////content in options file
+--connect 
+jdbc:mysql://localhost/db 
+--username 
+root
+
+sqoop list-tables --options-file /home/gopal/opt.opt --password-file file:///home/gopal/sqoop.password   ///in options file connect credentials
+
+
+
+
 for managed tables:
 sqoop import --connect jdbc:mysql://localhost/db --username root -P --table pokemon --target-dir /user/M --append --incremental lastmodified --check-column last_modified --last-value '2018-09-02 13:03:08.0' -m 1 
 
